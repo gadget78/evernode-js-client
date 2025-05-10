@@ -1117,15 +1117,15 @@ class HostClient extends BaseEvernodeClient {
             } else if (options.messageKey === 'none') {
                 doEncrypt = false;
             } else
-                throw "Tenant encryption key not valid.";
+                throw "Tenant encryption key not present or valid.";
         } else {
             encKey = await tenantAcc.getMessageKey();
             if (!encKey) { data = Buffer.concat([Buffer.from([0x00]), Buffer.from(JSON.stringify({ "instanceInfo": "data omitted as no messagekey on account"}))]).toString('base64'); }
         }
 
         if (doEncrypt && encKey) {
-            if (!encKey)
             // Override encrypted prefix flag and the data.
+            const encrypted = await EncryptionHelper.encrypt(encKey, instanceInfo);
             data = Buffer.concat([Buffer.from([0x01]), Buffer.from(encrypted, 'base64')]).toString('base64');
         }
 
